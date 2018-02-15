@@ -31,15 +31,8 @@ contract MyPlubitToken is Owned, Token {
 
   /* Initializes contract with initial supply tokens to the creator of the contract */
   function MyPlubitToken() {
-      //balances[PlubSaleDeposit]           = PlubSale;                                         // Deposit PBT
-      //balances[PlubPresaleDeposit]        = PlubPreSale;                                      // Deposit PBT
-      //balances[PlubTeamDeposit]           = PlubTeam;                                         // Deposit PBT
-      //balances[PlubNetDeposit]            = PlubNet;                                         // Deposit PBT
-
-      //totalSupply = PlubSale + PlubPreSale + PlubTeam + PlubNet;
+  
       bytes memory data;
-      //Transfer(0x0,PlubSaleDeposit,PlubSale, data);
-      //Transfer(0x0,PlubPresaleDeposit,PlubPreSale, data);
       Transfer(0x0,PlubTeamDeposit,PlubTeam, data);
       Transfer(0x0,PlubNetDeposit,PlubNet, data);
   }
@@ -52,15 +45,15 @@ contract MyPlubitToken is Owned, Token {
       PreIco_contract = _preIco;
   }
 
-  function transferFromICO(address _from, address _to, uint _value) only_ICO onlyPayloadSize(3 * 32) returns (bool success) {
+  function transferFromICO(address _to, uint _value) only_ICO onlyPayloadSize(3 * 32) returns (bool success) {
     balances[_to] = safeAdd(balances[_to], _value);
-    balances[_from] = safeSubtract(balances[_from], _value);
+   // balances[_from] = safeSubtract(balances[_from], _value);
     bytes memory data;
-    Transfer(_from, _to, _value, data);
+    Transfer(0, _to, _value, data);
     return true;
   }
 
-  function transferFromPreICO(address _from, address _to, uint _value) only_PREICO onlyPayloadSize(3 * 32) returns (bool success) {
+  function transferFromPreICO(address _to, uint _value) only_PREICO onlyPayloadSize(3 * 32) returns (bool success) {
     require(PlubPreSale + _value <= MaxPlubPreSale);
     balances[_to] = safeAdd(balances[_to], _value);
     PlubPreSale = safeAdd(PlubPreSale, _value);

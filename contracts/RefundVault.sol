@@ -47,7 +47,7 @@ contract RefundVault is Owned, MathLib {
     RefundsEnabled();
   }
 
-  function refund(address investor) public {
+  function refund(address investor) onlyOwner public {
     require(state == State.Refunding);
     uint256 depositedValue = deposited[investor];
     deposited[investor] = 0;

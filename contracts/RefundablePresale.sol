@@ -9,7 +9,7 @@ import "./RefundVault.sol";
 
 /**
  * @title RefundableCrowdsale
- * @dev Extension of Crowdsale contract that adds a funding goal, and
+ * @dev Extension of PreSalePlubitContract contract that adds a funding goal, and
  * the possibility of users getting a refund if goal is not met.
  * Uses a RefundVault as the crowdsale's vault.
  */
@@ -22,7 +22,8 @@ contract RefundablePresale is PreSalePlubitContract{
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
 
-  function RefundableCrowdsale(uint256 _goal) public {
+  function RefundablePresale(uint256 _goal, address token) PreSalePlubitContract(token) public {
+    PreSalePlubitContract(token);
     require(_goal > 0);
     vault = new RefundVault(ethFundDepositPreSale);
     goal = _goal;
@@ -37,6 +38,7 @@ contract RefundablePresale is PreSalePlubitContract{
   }
 
   function goalReached() public returns (bool) {
+
     return weiRaised >= goal;
   }
 
@@ -47,8 +49,8 @@ contract RefundablePresale is PreSalePlubitContract{
     } else {
       vault.enableRefunds();
     }
-
-   // super.finalization();
+    isFinalized = true;
+   
   }
 
   // We're overriding the fund forwarding from Crowdsale.

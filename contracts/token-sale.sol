@@ -32,14 +32,14 @@ contract SalePlubitContract is Owned, Pausable, MathLib {
         isFinalized = false;
     }
 
-    event MintPlub(address from, address to, uint256 val);
+    event MintPlub(address to, uint256 val);
     event LogRefund(address indexed _to, uint256 _value);
     event CreateTokensEvent();
 
 
     function CreatePlub(address to, uint256 val) internal returns (bool success) {
-        MintPlub(plubFundDeposit,to,val);
-        return pub.transferFromICO(plubFundDeposit, to, val);
+        MintPlub(to,val);
+        return pub.transferFromICO(to, val);
     }
 
     function () payable {
