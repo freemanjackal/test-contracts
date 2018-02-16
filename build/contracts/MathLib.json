@@ -2,7 +2,18 @@
   "contract_name": "MathLib",
   "abi": [],
   "unlinked_binary": "0x60606040523415600e57600080fd5b5b603680601c6000396000f30060606040525b600080fd00a165627a7a7230582037f3a904b7170ac36d27783ca05115dde97da9f7ba1f9829c57271db1bd5b8ac0029",
-  "networks": {},
+  "networks": {
+    "1518796306854": {
+      "links": {},
+      "events": {},
+      "updated_at": 1518796756603
+    },
+    "1518800459202": {
+      "links": {},
+      "events": {},
+      "updated_at": 1518801143883
+    }
+  },
   "schema_version": "0.0.5",
-  "updated_at": 1518701728583
+  "updated_at": 1518801572240
 }

@@ -53,7 +53,7 @@ contract MyPlubitToken is Owned, Token {
     return true;
   }
 
-  function transferFromPreICO(address _to, uint _value) only_PREICO onlyPayloadSize(3 * 32) returns (bool success) {
+  function transferFromPreICO(address _to, uint _value) only_PREICO returns (bool success) {
     require(PlubPreSale + _value <= MaxPlubPreSale);
     balances[_to] = safeAdd(balances[_to], _value);
     PlubPreSale = safeAdd(PlubPreSale, _value);

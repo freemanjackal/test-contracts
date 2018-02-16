@@ -23,7 +23,7 @@ contract RefundablePresale is PreSalePlubitContract{
   RefundVault public vault;
 
   function RefundablePresale(uint256 _goal, address token) PreSalePlubitContract(token) public {
-    PreSalePlubitContract(token);
+    //PreSalePlubitContract(token);
     require(_goal > 0);
     vault = new RefundVault(ethFundDepositPreSale);
     goal = _goal;

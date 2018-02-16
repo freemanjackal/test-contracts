@@ -53,9 +53,9 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
     /// @dev Accepts ether and creates new IND tokens.
     function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
       require (tokenCreationCap < maxSupply);                                         // CAP reached no more please
-      require (block.number >= 0);//startBlock
+      require (block.number >= 1);//startBlock
       require (block.number <= endBlock);
-      require (_value >= 0); //minContribution                                             // To avoid spam transactions on the network
+      require (_value >= 0 ether); //minContribution                                             // To avoid spam transactions on the network
       require (!isFinalized);
       //require (tx.gasprice <= MAX_GAS_PRICE);
 
@@ -81,12 +81,12 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
         weiRaised = safeAdd(weiRaised, safeSubtract(_value, etherToRefund));
         return;
       }
-      /*weiRaised = safeAdd(weiRaised, _value);
-      sendFunds();
+      weiRaised = safeAdd(weiRaised, _value);
       tokenCreationCap = checkedSupply;
       bonuses = calculateBonus(tokens);
-      require(CreatePlub(_beneficiary, safeAdd(bonuses, tokens)));                                         // logs token creation
-      */
+      tokens = safeAdd(bonuses, tokens);
+      require(CreatePlub(_beneficiary, tokens));                                         // logs token creation
+      sendFunds();
       
     }
 
