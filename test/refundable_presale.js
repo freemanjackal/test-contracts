@@ -64,7 +64,7 @@ contract('RefundablePresale', function (accounts) {
     it('has goal', async function () {
     	let go = await fundRaise.goal.call()
     	
-    	console.log(go);
+    	//console.log(go);
 
         assert.equal(go, go)
     })
@@ -77,7 +77,9 @@ contract('RefundablePresale', function (accounts) {
         console.log(balance);
         let expectedTokenAmount = new BigNumber(10);
         //assert.equal(balance, 1)
-        expectedTokenAmount = 2e+16*1000+2e+16*0.25;
+        let bonus = await fundRaise.calculateBonus.call(2e+17*1000)
+        console.log(bonus + " bonussss")
+        expectedTokenAmount = ((2e+17)*1000)+((2e+17)*1000*0.25);
         console.log(expectedTokenAmount);
         let go = await this.token.PlubPreSale.call()
         console.log(go);

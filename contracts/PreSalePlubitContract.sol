@@ -52,7 +52,7 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
 
     /// @dev Accepts ether and creates new IND tokens.
     function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
-      require (tokenCreationCap < maxSupply);                                         // CAP reached no more please
+      require (weiRaised < maxSupply);                                         // CAP reached no more please
       require (block.number >= 1);//startBlock
       require (block.number <= endBlock);
       require (_value >= 0 ether); //minContribution                                             // To avoid spam transactions on the network
@@ -60,39 +60,42 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
       //require (tx.gasprice <= MAX_GAS_PRICE);
 
       uint256 tokens = safeMult(_value, tokenExchangeRate);                             // check that we're not over totals
-      uint256 checkedSupply = safeAdd(tokenCreationCap, tokens);
+      uint256 checkedSupply = safeAdd(weiRaised, _value);
 
       //require (pub.balanceOf(msg.sender) + tokens <= maxTokens);   to define max tokens a user can buy
-      uint256 bonuses;
+      uint256 bonuses = calculateBonus(tokens);
       // fairly allocate the last few tokens
       if (checkedSupply > maxSupply) {
-        uint256 tokensToAllocate = safeSubtract(maxSupply, tokenCreationCap);
-        uint256 tokensToRefund   = safeSubtract(tokens,tokensToAllocate);
-        tokenCreationCap = maxSupply;
-        uint256 etherToRefund = tokensToRefund / tokenExchangeRate;
+        uint256 ethersToAllocate = safeSubtract(maxSupply, weiRaised);
+        uint256 etherToRefund   = safeSubtract(_value,ethersToAllocate);
+        weiRaised = maxSupply;
+        //uint256 etherToRefund = tokensToRefund / tokenExchangeRate;
 
-        bonuses = calculateBonus(tokensToAllocate);
-        tokensToAllocate = safeAdd(tokensToAllocate, bonuses);
+        tokens = safeMult(ethersToAllocate, tokenExchangeRate);
+        bonuses = calculateBonus(tokens);
+        tokens = safeAdd(tokens, bonuses);
 
-        require(CreatePlub(_beneficiary,tokensToAllocate));                              // Create
+        
+        require(CreatePlub(_beneficiary,tokens));                              // Create
+        sendFunds();
         msg.sender.transfer(etherToRefund);
         LogRefund(msg.sender,etherToRefund);
-        sendFunds();
-        weiRaised = safeAdd(weiRaised, safeSubtract(_value, etherToRefund));
+        
+       // weiRaised = safeAdd(weiRaised, safeSubtract(_value, etherToRefund));
         return;
       }
-      weiRaised = safeAdd(weiRaised, _value);
-      tokenCreationCap = checkedSupply;
-      bonuses = calculateBonus(tokens);
+      weiRaised = checkedSupply;
+      //tokenCreationCap = checkedSupply;
+      //bonuses = calculateBonus(tokens);
       tokens = safeAdd(bonuses, tokens);
       require(CreatePlub(_beneficiary, tokens));                                         // logs token creation
       sendFunds();
       
     }
 
-    function calculateBonus(uint256 _tokens) internal returns(uint256){
+    function calculateBonus(uint256 _tokens)  returns(uint256){
 
-    	return safeMult(_tokens, safeDiv(25,100));
+    	return safeDiv(_tokens, 4);
 
     }
 
