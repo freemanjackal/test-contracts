@@ -17,16 +17,16 @@ contract RefundablePresale is PreSalePlubitContract{
   //using MathLib for uint256;
 
   // minimum amount of funds to be raised in weis
-  uint256 public goal;
+  //uint256 public goal;
 
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
 
   function RefundablePresale(uint256 _goal, address token) PreSalePlubitContract(token) public {
     //PreSalePlubitContract(token);
-    require(_goal > 0);
+    require(maxSupply > 0);
     vault = new RefundVault(ethFundDepositPreSale);
-    goal = _goal;
+    maxSupply = _goal;
   }
 
   // if crowdsale is unsuccessful, investors can claim refunds here
@@ -39,7 +39,7 @@ contract RefundablePresale is PreSalePlubitContract{
 
   function goalReached() public returns (bool) {
 
-    return weiRaised >= goal;
+    return weiRaised >= maxSupply;
   }
 
   // vault finalization task, called when owner calls finalize()

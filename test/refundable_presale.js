@@ -1,33 +1,3 @@
-/*var RefundablePresale = artifacts.require('./RefundablePresale.sol');
-contract('RefundablePresale', function(accounts) {
-
-  it("should assert true", async function(done) {
-    var refundable_presale = RefundablePresale.deployed(accounts[0]);
-    let fundraise
-    funraise = RefundablePresale.new(accounts[0]);
-    refundable_presale.then();
-    const owner = await funraise.owner(); 
-    assert.equal(owner, accounts[0]);
-    done();
-  });
-});
-*/
-
-/*contract('MyPlubitToken', function ([owner,other, token]) {
-    //let token = accounts[2]
-    let myPlubit
-    beforeEach('setup contract for each test', async function () {
-        //fundRaise = await RefundablePresale.new(owner)
-        myPlubit = await MyPlubitToken.new(token)
-    })
-
-    it('has an owner', async function () {
-    	console.log(await myPlubit.address);
-    	console.log(await myPlubit.owner());
-        assert.equal(await myPlubit.owner(), owner)
-    })
-})
-*/
 
 const BigNumber = web3.BigNumber;
 require('chai')
@@ -35,8 +5,32 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
 .should();
 
+
+function advanceToBlock(number) {
+  if (web3.eth.blockNumber > number) {
+    throw Error(`block number ${number} is in thfe past (current is ${web3.eth.blockNumber})`)
+  }
+
+  while (web3.eth.blockNumber < number) {
+    web3.eth.sendTransaction({value: 1, from: web3.eth.accounts[8], to: web3.eth.accounts[7]});
+  }
+}
+
+const assertJump = function(error) {
+  assert.isAbove(error.message.search('VM Exception while processing transaction: revert'), -1, 'Invalid opcode error must be returned');
+};
+
+
+const startBlock = 3000;
+const endBlock = 4000;
+const minContribution = 500000000000000000;
+const maxSupply = 2e+18;
+const tokenExchangeRate = 1000;
+
+
 const RefundablePresale = artifacts.require('RefundablePresale.sol')
 const MyPlubitToken = artifacts.require('MyPlubitToken.sol')
+const WL = artifacts.require('WhiteList.sol')
 
 contract('RefundablePresale', function (accounts) {
     let fundRaise
@@ -44,54 +38,44 @@ contract('RefundablePresale', function (accounts) {
     //let token = accounts[2]
     beforeEach('setup contract for each test', async function () {
         this.token  = await MyPlubitToken.new();
-        fundRaise = await RefundablePresale.new(1000000000000000,
+        fundRaise = await RefundablePresale.new(2e+18,
         this.token.address)
-        //myPlubit = 
+        this.wl = await WL.new();
     })
-    /*it('is owned by superuser', () => RefundablePresale.deployed()
-    .then(instance => instance.owner())
-    .then((superuser) => {
-      assert.equal(owner, superuser, `Expected the owner to be '${superuser}'`)
-    }))*/
     
     it('has an owner', async function () {
-        //fundRaise.should.exist;
-        //fundRaise = await RefundablePresale.deployed();
+        
         assert.equal(await fundRaise.owner(), owner)
-       // done();
     })
 
     it('has goal', async function () {
-    	let go = await fundRaise.goal.call()
-    	
-    	//console.log(go);
-
-        assert.equal(go, go)
+    	let go = await fundRaise.maxSupply.call()
+    	    	
+        assert.equal(go, maxSupply);
     })
 
-    it('permits owner to receive funds', async function () {
+    it('permits send from whitelisted addr', async function () {
+        await this.wl.addInvestorToWhiteList(accounts[4]);
+        await fundRaise.setWhiteList(this.wl.address);
+        console.log(this.wl.address) ;
+        console.log(await fundRaise.investorWhiteList())  ; 
+        assert.equal(this.wl.address, await fundRaise.investorWhiteList());
         await this.token.loadPreIco(fundRaise.address);
-        await fundRaise.sendTransaction({ value: 2e+17, from: accounts[4] })
-       // const ownerBalanceBeforeRemovingFunds = web3.eth.getBalance(owner).toNumber()
-        let balance = await this.token.balanceOf(accounts[4]);
-        console.log(balance);
-        let expectedTokenAmount = new BigNumber(10);
-        //assert.equal(balance, 1)
-        let bonus = await fundRaise.calculateBonus.call(2e+17*1000)
-        console.log(bonus + " bonussss")
-        expectedTokenAmount = ((2e+17)*1000)+((2e+17)*1000*0.25);
-        console.log(expectedTokenAmount);
-        let go = await this.token.PlubPreSale.call()
-        console.log(go);
-        //(await this.token.balanceOf(accounts[4])).should.be.bignumber.equal(expectedTokenAmount);
-        /*console.log(web3.eth.getBalance(fundRaiseAddress).toNumber());
-        let qw = await fundRaise.goalReached.call();
-        await fundRaise.finalize.call();
-        let ff = await fundRaise.isFinalized.call();
-        console.log(ff);
-        //assert.isTrue(qw);
-        */
-})
+        await fundRaise.sendTransaction({ value: 2e+18, from: accounts[4] })
+    })
+
+    it('should not create tokens from any just pre-ico', async function () {
+        
+        
+        try {
+            await this.wl.addInvestorToWhiteList(accounts[4]);
+            await fundRaise.setWhiteList(this.wl.address);
+            await fundRaise.sendTransaction({ value: 2e+18, from: accounts[4] })
+        } catch (error) {
+            return assertJump(error);
+        }
+        assert.fail('should have thrown before');
+    })
 
 
 })
