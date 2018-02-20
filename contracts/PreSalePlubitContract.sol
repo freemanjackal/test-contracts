@@ -70,7 +70,7 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
       require (weiRaised < maxSupply);                                         // CAP reached no more please
       require (block.number >= 1);//startBlock
       require (block.number <= endBlock);
-      require (_value >= 0 ether); //minContribution                                             // To avoid spam transactions on the network
+      require (_value >= minContribution); //minContribution                                             // To avoid spam transactions on the network
       require (!isFinalized);
       //require (tx.gasprice <= MAX_GAS_PRICE);
 
