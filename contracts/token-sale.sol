@@ -75,10 +75,10 @@ contract SalePlubitContract is Owned, Pausable, MathLib {
         //tokens = safeAdd(tokens, bonuses);
         tokenCreationCap = safeAdd(tokenCreationCap, tokens);
 
-        require(CreatePlub(_beneficiary,tokensToAllocate));                              // Create
+        require(CreatePlub(_beneficiary,tokens));                              // Create
 
-        LogRefund(msg.sender,etherToRefund);
-        msg.sender.transfer(etherToRefund); 
+        LogRefund(msg.sender,ethersToRefund);
+        msg.sender.transfer(ethersToRefund); 
         sendFunds();
         
         return;

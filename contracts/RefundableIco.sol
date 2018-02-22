@@ -3,7 +3,7 @@ pragma solidity ^0.4.2;
 
 import "./Owned.sol";
 import "./MathLib.sol";
-import "./PreSalePlubitContract.sol";
+import "./token-sale.sol";
 import "./RefundVault.sol";
 
 
@@ -22,7 +22,7 @@ contract RefundableIco is SalePlubitContract{
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
 
-  function RefundablePresale(uint256 _goal, address ethVaultAddr, address token) SalePlubitContract(token) public {
+  function RefundableIco(uint256 _goal, address ethVaultAddr, address token) SalePlubitContract(token) public {
     require(_goal > 0);
     vault = new RefundVault(ethVaultAddr); // addr where funds will be forwarded after ico finalized and sofcapt(goal) is reached
     goal = _goal;
