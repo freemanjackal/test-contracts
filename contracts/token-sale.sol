@@ -4,6 +4,7 @@ import "./Owned.sol";
 import "./Pausable.sol";
 import "./MathLib.sol";
 import "./MyPlubitToken.sol";
+import "./WhiteList.sol";
 
 contract SalePlubitContract is Owned, Pausable, MathLib {
 
@@ -12,23 +13,24 @@ contract SalePlubitContract is Owned, Pausable, MathLib {
     // crowdsale parameters
     uint256 public startBlock = 3000;
     uint256 public endBlock   = 400000;
-    uint256 public totalSupply;
+    uint256 public ethHardCap = 10* 10**decimals;                                       //hard capitalization
     address public ethFundDeposit   = 0xCAb07e359322702Cc34eD480bb20aF8Aab6aD6A9;      // deposit address for ETH for plubit Fund
-    address public plubFundDeposit   = 0xD7199729a878c2D228cc4E82A7ce6351bEDADD2e;      // deposit address for plubit
-    address public plubAddress =    0xd0caEacb166Ed5B30BebfE704cb4E0786326B6A8;       //addres of token contract
-
+    
     bool public isFinalized;                                                            // switched to true in operational state
     uint256 public constant decimals = 18;                                              // #dp in token contract
-    uint256 public tokenCreationCap;
+    uint256 public tokenCreationCap;                                                    //tokens created on ico sale
     uint256 public constant tokenExchangeRate = 1000;                                   // define how many tokens per 1 ETH
     uint256 public constant minContribution = 0.05 ether;
-    uint256 public constant maxTokens = 1 * (10 ** 6) * 10**decimals;
     uint256 public constant MAX_GAS_PRICE = 50000000000 wei;                            // maximum gas price for contribution transactions
 
-    function SalePlubitContract() {
-        CreateTokensEvent();
-        pub = MyPlubitToken(plubAddress);
-        tokenCreationCap = pub.balanceOf(plubFundDeposit);
+    // amount of raised money in wei
+    uint256 public weiRaised;
+
+    WhiteList public investorWhiteList; //whitelisted investors                          
+
+    function SalePlubitContract(address token) {
+        pub = MyPlubitToken(token);
+        tokenCreationCap = 0;
         isFinalized = false;
     }
 
@@ -49,7 +51,7 @@ contract SalePlubitContract is Owned, Pausable, MathLib {
 
     /// @dev Accepts ether and creates new IND tokens.
     function createTokens(address _beneficiary, uint256 _value) internal whenNotPaused {
-      require (tokenCreationCap > totalSupply);                                         // CAP reached no more please
+      require (ethHardCap > weiRaised);                                         // CAP reached no more please
       require (block.number >= startBlock);
       require (block.number <= endBlock);
       require (_value >= minContribution);                                              // To avoid spam transactions on the network
@@ -57,35 +59,51 @@ contract SalePlubitContract is Owned, Pausable, MathLib {
       require (tx.gasprice <= MAX_GAS_PRICE);
 
       uint256 tokens = safeMult(_value, tokenExchangeRate);                             // check that we're not over totals
-      uint256 checkedSupply = safeAdd(totalSupply, tokens);
+      uint256 checkedSupply = safeAdd(weiRaised, _value);
 
-      require (pub.balanceOf(msg.sender) + tokens <= maxTokens);
+      //require (pub.balanceOf(msg.sender) + tokens <= maxTokens);
 
       // fairly allocate the last few tokens
-      if (tokenCreationCap < checkedSupply) {
-        uint256 tokensToAllocate = safeSubtract(tokenCreationCap,totalSupply);
-        uint256 tokensToRefund   = safeSubtract(tokens,tokensToAllocate);
-        totalSupply = tokenCreationCap;
-        uint256 etherToRefund = tokensToRefund / tokenExchangeRate;
+      if (ethHardCap < checkedSupply) {
+        uint256 ethersToAllocate = safeSubtract(ethHardCap, weiRaised);
+        uint256 ethersToRefund   = safeSubtract(_value,ethersToAllocate);
+        weiRaised = ethHardCap;
+
+        //analize if it wil have bonuses
+        //tokens = safeMult(ethersToAllocate, tokenExchangeRate);
+        //bonuses = calculateBonus(tokens);
+        //tokens = safeAdd(tokens, bonuses);
+        tokenCreationCap = safeAdd(tokenCreationCap, tokens);
 
         require(CreatePlub(_beneficiary,tokensToAllocate));                              // Create
-        msg.sender.transfer(etherToRefund);
+
         LogRefund(msg.sender,etherToRefund);
-        ethFundDeposit.transfer(this.balance);
+        msg.sender.transfer(etherToRefund); 
+        sendFunds();
+        
         return;
       }
 
-      totalSupply = checkedSupply;
+      weiRaised = checkedSupply;
+      //if it will has bonuses
+      //tokens = safeAdd(bonuses, tokens);
+      tokenCreationCap = safeAdd(tokenCreationCap, tokens);
+
       require(CreatePlub(_beneficiary, tokens));                                         // logs token creation
-      ethFundDeposit.transfer(this.balance);
+      sendFunds();
     }
 
-    /// @dev Ends the funding period and sends the ETH home
-    function finalize() external onlyOwner {
-      require (!isFinalized);
-      // move to operational
-      isFinalized = true;
-      ethFundDeposit.transfer(this.balance);                                            // send the eth to multi-sig
+
+      //if has bonuses
+     function calculateBonus(uint256 _tokens) private returns(uint256){
+
+      return safeDiv(_tokens, 4);
+
+    }
+
+
+    function sendFunds() internal {
+
     }
 
 }

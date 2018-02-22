@@ -37,8 +37,9 @@ contract RefundVault is Owned, MathLib {
   function close() onlyOwner public {
     require(state == State.Active);
     state = State.Closed;
-    Closed();
     wallet.transfer(this.balance);
+    Closed();
+    
   }
 
   function enableRefunds() onlyOwner public {

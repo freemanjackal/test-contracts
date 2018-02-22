@@ -18,15 +18,17 @@ contract MyPlubitToken is Owned, Token {
 
 
 
-    uint256 public constant PlubSale      = 10000000 * 10**decimals;
+   // uint256 public constant PlubSale      = 10000000 * 10**decimals;
 
-    uint256 public constant MaxPlubPreSale   = 5000000 * 10**decimals; // maximum amount of tokens to be sold in pre ico
-    uint256 public PlubPreSale = 0; // amount of tokens selled in pre ico
+    //uint256 public constant MaxPlubPreSale   = 5000000 * 10**decimals; // maximum amount of tokens to be sold in pre ico
+   // uint256 public PlubPreSale = 0; // amount of tokens selled in pre ico
 
     uint256 public constant PlubTeam      = 2000000 * 10**decimals;
     uint256 public constant PlubNet       = 10000000 * 10**decimals;
 
-    mapping (address => bool) public frozenAccount;
+    bool public preico_setted = false;
+    bool public ico_setted = false;
+  //  mapping (address => bool) public frozenAccount;
 
 
   /* Initializes contract with initial supply tokens to the creator of the contract */
@@ -38,25 +40,27 @@ contract MyPlubitToken is Owned, Token {
   }
 
   function load(address _ico) onlyOwner {
+      require(ico_setted == false);
       Ico_contract = _ico;
+      ico_setted = true;
   }
 
   function loadPreIco(address _preIco) onlyOwner {
+      require(preico_setted == false);
       PreIco_contract = _preIco;
+      preico_setted = true;
   }
 
   function transferFromICO(address _to, uint _value) only_ICO onlyPayloadSize(3 * 32) returns (bool success) {
     balances[_to] = safeAdd(balances[_to], _value);
-   // balances[_from] = safeSubtract(balances[_from], _value);
     bytes memory data;
     Transfer(0, _to, _value, data);
     return true;
   }
 
-  function transferFromPreICO(address _to, uint _value) only_PREICO returns (bool success) {
-    require(PlubPreSale + _value <= MaxPlubPreSale);
+  function transferFromPreICO(address _to, uint _value) only_PREICO onlyPayloadSize(3 * 32) returns (bool success) {
     balances[_to] = safeAdd(balances[_to], _value);
-    PlubPreSale = safeAdd(PlubPreSale, _value);
+    //PlubPreSale = safeAdd(PlubPreSale, _value);
     bytes memory data;
     Transfer(0, _to, _value, data);
     return true;

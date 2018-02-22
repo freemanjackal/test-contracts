@@ -1,0 +1,145 @@
+{
+  "contract_name": "WhiteList",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "addInvestorToWhiteList",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "referralList",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "investorWhiteList",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "getReferralOf",
+      "outputs": [
+        {
+          "name": "result",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "removeInvestorFromWhiteList",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        },
+        {
+          "name": "referral",
+          "type": "address"
+        }
+      ],
+      "name": "addReferralOf",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "isAllowed",
+      "outputs": [
+        {
+          "name": "result",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "InvestorWhiteList",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040525b60008054600160a060020a03191633600160a060020a03161790555b5b61049b806100316000396000f300606060405236156100965763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416634f76a077811461009b5780638da5cb5b146100bc5780638f054bf3146100eb57806394642f96146101265780639478a7c914610159578063984fba4914610194578063a014b9bd146101b5578063babcc539146101dc578063e5f643cf1461020f575b600080fd5b34156100a657600080fd5b6100ba600160a060020a0360043516610224565b005b34156100c757600080fd5b6100cf6102a6565b604051600160a060020a03909116815260200160405180910390f35b34156100f657600080fd5b6100cf600160a060020a03600435166102b5565b604051600160a060020a03909116815260200160405180910390f35b341561013157600080fd5b610145600160a060020a03600435166102d0565b604051901515815260200160405180910390f35b341561016457600080fd5b6100cf600160a060020a03600435166102e5565b604051600160a060020a03909116815260200160405180910390f35b341561019f57600080fd5b6100ba600160a060020a0360043516610306565b005b34156101c057600080fd5b6100ba600160a060020a0360043581169060243516610381565b005b34156101e757600080fd5b610145600160a060020a036004351661044a565b604051901515815260200160405180910390f35b341561021a57600080fd5b6100ba61046c565b005b60005433600160a060020a0390811691161461023f57600080fd5b600160a060020a038116158015906102705750600160a060020a03811660009081526001602052604090205460ff16155b151561027b57600080fd5b600160a060020a0381166000908152600160208190526040909120805460ff191690911790555b5b50565b600054600160a060020a031681565b600260205260009081526040902054600160a060020a031681565b60016020526000908152604090205460ff1681565b600160a060020a03808216600090815260026020526040902054165b919050565b60005433600160a060020a0390811691161461032157600080fd5b600160a060020a038116158015906103515750600160a060020a03811660009081526001602052604090205460ff165b151561035c57600080fd5b600160a060020a0381166000908152600160205260409020805460ff191690555b5b50565b60005433600160a060020a0390811691161461039c57600080fd5b600160a060020a038216158015906103bc5750600160a060020a03811615155b80156103e05750600160a060020a0380831660009081526002602052604090205416155b80156103fe575080600160a060020a031682600160a060020a031614155b151561040957600080fd5b600160a060020a038281166000908152600260205260409020805473ffffffffffffffffffffffffffffffffffffffff19169183169190911790555b5b5050565b600160a060020a03811660009081526001602052604090205460ff165b919050565b5b5600a165627a7a723058206d1cc8570385e3227dbc0dcc902984dff482499bf08efe080907905b9722488a0029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1519311162375
+}

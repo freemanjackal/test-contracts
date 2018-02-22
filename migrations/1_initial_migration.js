@@ -7,10 +7,10 @@ var Pausa =  artifacts.require("./Pausable.sol");
 var Vault =  artifacts.require("./RefundVault.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(Migrations);
+  /*deployer.deploy(Migrations);
 
   deployer.deploy(MyPlubitToken).then(function(){
     deployer.deploy(RefundablePresale,50000000000000000000,
     	MyPlubitToken.address)});
-  
+  */
 };

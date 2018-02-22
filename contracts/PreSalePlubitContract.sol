@@ -7,16 +7,17 @@ import "./MyPlubitToken.sol";
 import "./WhiteList.sol";
 
 
+
 contract PreSalePlubitContract is Owned, Pausable, MathLib {
 
     MyPlubitToken    pub;
 
     // crowdsale parameters
-    uint256 public startBlock = 3000;
-    uint256 public endBlock   = 4000;
+    uint256 public startBlock = 10;
+    uint256 public endBlock   = 100;
     uint256 public constant decimals = 18;                                              // #dp in token contract
-    uint256 public maxSupply = 5000000 * 10**decimals; //max amount of tokens to sell
-    address public ethFundDepositPreSale   = 0x91194e841c6b3f76b7f60fa3c9b53ebe861d8ee2; //9     // deposit address for ETH for plubit Fund for presale
+    uint256 public maxSupply = 2 * 10**decimals; //hard capitalization
+    address public ethFundDepositPreSale; // deposit address for ETH for plubit Fund for presale
 
     bool public isFinalized;                                                            // switched to true in operational state
     
@@ -31,7 +32,6 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
     WhiteList public investorWhiteList; //whitelisted investors
 
     function PreSalePlubitContract(address token) {
-        CreateTokensEvent();
         pub = MyPlubitToken(token);
         tokenCreationCap = 0;
         isFinalized = false;
@@ -46,6 +46,7 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
 
     function CreatePlub(address to, uint256 val) internal returns (bool success) {
         MintPlub(to,val);
+        LogRefund(msg.sender,5555);
         return pub.transferFromPreICO(to, val);
     }
 
@@ -91,16 +92,17 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
         tokens = safeAdd(tokens, bonuses);
         tokenCreationCap = safeAdd(tokenCreationCap, tokens);
 
-        require(CreatePlub(_beneficiary,tokens));                              // Create
-        sendFunds();
         
-        //msg.sender.transfer(etherToRefund); ///analyze this for testrpc and other
+        require(CreatePlub(_beneficiary,tokens)); // Create
+
+
         LogRefund(msg.sender,etherToRefund);
+        msg.sender.transfer(etherToRefund); 
+        sendFunds();
         
         return;
       }
       weiRaised = checkedSupply;
-      //bonuses = calculateBonus(tokens);
       tokens = safeAdd(bonuses, tokens);
       tokenCreationCap = safeAdd(tokenCreationCap, tokens);
 
@@ -109,7 +111,7 @@ contract PreSalePlubitContract is Owned, Pausable, MathLib {
       
     }
 
-    function calculateBonus(uint256 _tokens)  returns(uint256){
+    function calculateBonus(uint256 _tokens) private returns(uint256){
 
       return safeDiv(_tokens, 4);
 

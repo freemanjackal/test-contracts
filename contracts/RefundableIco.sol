@@ -13,7 +13,7 @@ import "./RefundVault.sol";
  * the possibility of users getting a refund if goal is not met.
  * Uses a RefundVault as the crowdsale's vault.
  */
-contract RefundablePresale is PreSalePlubitContract{
+contract RefundableIco is SalePlubitContract{
   //using MathLib for uint256;
 
   // minimum amount of funds to be raised in weis
@@ -22,7 +22,7 @@ contract RefundablePresale is PreSalePlubitContract{
   // refund vault used to hold funds while crowdsale is running
   RefundVault public vault;
 
-  function RefundablePresale(uint256 _goal, address ethVaultAddr, address token) PreSalePlubitContract(token) public {
+  function RefundablePresale(uint256 _goal, address ethVaultAddr, address token) SalePlubitContract(token) public {
     require(_goal > 0);
     vault = new RefundVault(ethVaultAddr); // addr where funds will be forwarded after ico finalized and sofcapt(goal) is reached
     goal = _goal;
